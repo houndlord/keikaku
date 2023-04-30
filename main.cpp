@@ -13,6 +13,8 @@ int main() {
   if (token == Token{ConstantToken{1}}) {
     a = true;
     std::cout<<"true";
+    std::cout<<"yj";
   }
   std::cout << a;
+  std::cout << "xxyj";
 }

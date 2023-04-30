@@ -11,13 +11,24 @@ include_directories(${CMAKE_SOURCE_DIR}/include)
 add_subdirectory(lib)
 #include_directories(${CMAKE_SOURCE_DIR}/lib)
 
-option(BUILD_TESTS "Build tests" OFF)
+#option(BUILD_TESTS "Build tests" ON)
 
-if (BUIILD_TESTS) 
-    enable_testing()
-    add_subdirectory(testing)
-endif()
+#if (BUIILD_TESTS) 
+#enable_testing()
+#  include(GoogleTest)
+#  include(FetchContent)
+
+#  FetchContent_Declare(
+#    googletest
+#    GIT_REPOSITORY https://github.com/google/googletest.git
+#    GIT_TAG        master
+#  )
+#
+#  FetchContent_MakeAvailable(googletest)
+#
+#  add_subdirectory(testing)
+#endif()
 
 add_executable(
-  tokenizer ${CMAKE_SOURCE_DIR}/main.cpp
+  main ${CMAKE_SOURCE_DIR}/main.cpp
 )

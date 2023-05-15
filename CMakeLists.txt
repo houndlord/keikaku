@@ -8,10 +8,23 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 include_directories(${CMAKE_SOURCE_DIR}/include)
+
+
 add_subdirectory(lib)
 #include_directories(${CMAKE_SOURCE_DIR}/lib)
 
-#option(BUILD_TESTS "Build tests" ON)
+option(BUILD_TESTS "Build tests" ON)
+
+if(BUILD_TESTS)
+    enable_testing()
+    include(FetchContent)
+    FetchContent_Declare(
+        googletest
+        URL https://github.com/google/googletest/archive/03597a01ee50ed33e9dfd640b249b4be3799d395.zip
+    )
+    FetchContent_MakeAvailable(googletest)
+    add_subdirectory(testing)
+endif()
 
 #if (BUIILD_TESTS) 
 #enable_testing()
@@ -32,3 +45,5 @@ add_subdirectory(lib)
 add_executable(
   main ${CMAKE_SOURCE_DIR}/main.cpp
 )
+
+target_link_libraries(main frontend)

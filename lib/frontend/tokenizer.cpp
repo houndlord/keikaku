@@ -1,7 +1,9 @@
 #include "frontend/tokenizer.hpp"
+
 #include <cctype>
 #include <istream>
 #include <locale>
+#include <iostream>
 
 bool SymbolToken::operator==(const SymbolToken& other) const {
     return name == other.name;
@@ -34,37 +36,58 @@ void Tokenizer::Next() {
 }
 
 Token Tokenizer::GetToken() {
- auto ch = _input_stream->get();
+ //auto ch = _input_stream->get();
+ char ch;
+ do {
+    ch = _input_stream->get();
+  } while (std::isspace(ch));
  switch (ch) {
   case '(':
+    _input_stream->unget();
     return BracketToken::LEFT;
   case ')':
+    _input_stream->unget();
     return BracketToken::RIGHT;
   case '\'':
     {
       QuoteToken token;
+      _input_stream->unget();
       return token;
     }
   default:
+  if (std::isalpha(ch)) { // If the character is a letter
+    std::string symbol;
+    while (std::isalpha(ch)) {
+      symbol += ch;
+      ch = _input_stream->get();
+    }
+    _input_stream->unget(); // Put back the non-letter character
+    return SymbolToken{symbol}; // Create a SymbolToken
+  } 
   if (std::isdigit(ch) || ch == '-') {
-      int sign = 1;
-      int value = 0;
+    int sign = 1;
+    int value = 0;
 
-      if (ch == '-') {
-        sign = -1;
-        ch = _input_stream->get();
-      }
+    if (ch == '-') {
+      sign = -1;
+      ch = _input_stream->get();
+    }
 
-      while (std::isdigit(ch)) {
-        value = value * 10 + (ch - '0');
-        ch = _input_stream->get();
-      }
+    if (!std::isdigit(ch)) {
+      throw std::runtime_error("Expected a digit after '-'");
+    }
 
-      _input_stream->unget(); // Put back the non-digit character
-      return ConstantToken{value * sign};
-    } else{
+    do {
+      value = value * 10 + (ch - '0');
+      ch = _input_stream->get();
+    } while (std::isdigit(ch));
+
+    _input_stream->unget(); // Put back the non-digit character
+    return ConstantToken{value * sign};
+  }  else{
       // Handle other cases if necessary or throw an error.
-      throw std::runtime_error("Unexpected character encountered.");
+      std::cout << ch << "\n";
+      throw std::runtime_error(std::string(&ch));
     }
   }
 }

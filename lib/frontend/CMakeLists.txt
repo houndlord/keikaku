@@ -1,1 +1,4 @@
-add_library(tokenizer tokenizer.cpp)
+add_library(frontend
+  tokenizer.cpp
+  parser.cpp
+)

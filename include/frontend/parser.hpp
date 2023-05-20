@@ -35,4 +35,4 @@ public:
 
 AstNodePtr Parse(Tokenizer& tokenizer);
 AstNodePtr ReadList(Tokenizer& tokenizer);
-AstNodePtr Read(Tokenizer& tokenizer);
+AstNodePtr Read(Tokenizer& tokenizer, Token token);

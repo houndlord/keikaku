@@ -39,19 +39,22 @@ Token Tokenizer::GetToken() {
  //auto ch = _input_stream->get();
  char ch;
  do {
+    if (_input_stream->eof()) {
+      throw std::runtime_error("Unexpected end of file");
+    }
     ch = _input_stream->get();
   } while (std::isspace(ch));
  switch (ch) {
   case '(':
-    _input_stream->unget();
+    //_input_stream->unget();
     return BracketToken::LEFT;
   case ')':
-    _input_stream->unget();
+    //_input_stream->unget();
     return BracketToken::RIGHT;
   case '\'':
     {
       QuoteToken token;
-      _input_stream->unget();
+      //_input_stream->unget();
       return token;
     }
   default:
@@ -87,7 +90,7 @@ Token Tokenizer::GetToken() {
   }  else{
       // Handle other cases if necessary or throw an error.
       std::cout << ch << "\n";
-      throw std::runtime_error(std::string(&ch));
+      throw std::runtime_error(std::string(&ch)+"xyj");
     }
   }
 }

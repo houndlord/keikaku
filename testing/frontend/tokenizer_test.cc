@@ -61,3 +61,102 @@ TEST(BasicTokenizerTest, Seq) {
   //EXPECT_EQ(tokenizer.IsEnd(), true);
 }
                     
+TEST(TokenizerTest, SingleList) {
+  std::istringstream input("(42)");
+  Tokenizer tokenizer(&input);
+
+  EXPECT_EQ(tokenizer.GetToken(), Token{BracketToken::LEFT});
+  tokenizer.Next();
+  EXPECT_EQ(tokenizer.GetToken(), Token{ConstantToken{42}});
+  tokenizer.Next();
+  EXPECT_EQ(tokenizer.GetToken(), Token{BracketToken::RIGHT});
+  tokenizer.Next();
+  EXPECT_TRUE(tokenizer.IsEnd());
+}
+
+TEST(TokenizerTest, ListWithMultipleElements) {
+  std::istringstream input("(x 42 y)");
+  Tokenizer tokenizer(&input);
+
+  EXPECT_EQ(tokenizer.GetToken(), Token{BracketToken::LEFT});
+  tokenizer.Next();
+  EXPECT_EQ(tokenizer.GetToken(), Token{SymbolToken{"x"}});
+  tokenizer.Next();
+  EXPECT_EQ(tokenizer.GetToken(), Token{ConstantToken{42}});
+  tokenizer.Next();
+  EXPECT_EQ(tokenizer.GetToken(), Token{SymbolToken{"y"}});
+  tokenizer.Next();
+  EXPECT_EQ(tokenizer.GetToken(), Token{BracketToken::RIGHT});
+  tokenizer.Next();
+  EXPECT_TRUE(tokenizer.IsEnd());
+}
+
+TEST(TokenizerTest, NestedList) {
+  std::istringstream input("((1 2) (3 4))");
+  Tokenizer tokenizer(&input);
+
+  EXPECT_EQ(tokenizer.GetToken(), Token{BracketToken::LEFT});
+  tokenizer.Next();
+  
+  EXPECT_EQ(tokenizer.GetToken(), Token{BracketToken::LEFT});
+  tokenizer.Next();
+  EXPECT_EQ(tokenizer.GetToken(), Token{ConstantToken{1}});
+  tokenizer.Next();
+  EXPECT_EQ(tokenizer.GetToken(), Token{ConstantToken{2}});
+  tokenizer.Next();
+  EXPECT_EQ(tokenizer.GetToken(), Token{BracketToken::RIGHT});
+  tokenizer.Next();
+  
+  EXPECT_EQ(tokenizer.GetToken(), Token{BracketToken::LEFT});
+  tokenizer.Next();
+  EXPECT_EQ(tokenizer.GetToken(), Token{ConstantToken{3}});
+  tokenizer.Next();
+  EXPECT_EQ(tokenizer.GetToken(), Token{ConstantToken{4}});
+  tokenizer.Next();
+  EXPECT_EQ(tokenizer.GetToken(), Token{BracketToken::RIGHT});
+  tokenizer.Next();
+
+  EXPECT_EQ(tokenizer.GetToken(), Token{BracketToken::RIGHT});
+  tokenizer.Next();
+
+  EXPECT_TRUE(tokenizer.IsEnd());
+}
+
+TEST(TokenizerTest, CompleteProgram) {
+  std::istringstream input("(define (square x) (* x x))");
+  Tokenizer tokenizer(&input);
+
+  // (define (square x) (* x x))
+  EXPECT_EQ(tokenizer.GetToken(), Token{BracketToken::LEFT});
+  tokenizer.Next();
+
+  EXPECT_EQ(tokenizer.GetToken(), Token{SymbolToken{"define"}});
+  tokenizer.Next();
+
+  // (square x)
+  EXPECT_EQ(tokenizer.GetToken(), Token{BracketToken::LEFT});
+  tokenizer.Next();
+  EXPECT_EQ(tokenizer.GetToken(), Token{SymbolToken{"square"}});
+  tokenizer.Next();
+  EXPECT_EQ(tokenizer.GetToken(), Token{SymbolToken{"x"}});
+  tokenizer.Next();
+  EXPECT_EQ(tokenizer.GetToken(), Token{BracketToken::RIGHT});
+  tokenizer.Next();
+
+  // (* x x)
+  //EXPECT_EQ(tokenizer.GetToken(), Token{BracketToken::LEFT});
+  tokenizer.Next();
+  //EXPECT_EQ(tokenizer.GetToken(), Token{SymbolToken{"*"}});
+  tokenizer.Next();
+  //EXPECT_EQ(tokenizer.GetToken(), Token{SymbolToken{"x"}});
+  tokenizer.Next();
+  //EXPECT_EQ(tokenizer.GetToken(), Token{SymbolToken{"x"}});
+  tokenizer.Next();
+  //EXPECT_EQ(tokenizer.GetToken(), Token{BracketToken::RIGHT});
+  tokenizer.Next();
+
+  //EXPECT_EQ(tokenizer.GetToken(), Token{BracketToken::RIGHT});
+  tokenizer.Next();
+
+  EXPECT_TRUE(tokenizer.IsEnd());
+}

@@ -4,7 +4,7 @@
 #include "/home/houndlord/keikaku/lib/frontend/tokenizer.cpp"
 
 int main() {
-  std::stringstream s{"x"};
+  std::stringstream s{"(x 42)"};
   Tokenizer tokenizer(&s);
   if (tokenizer.IsEnd() == false) {
     std::cout << "alex is awesome";
@@ -16,7 +16,7 @@ int main() {
         std::cout << "ConstantToken with value " << arg.value << '\n';
     }
     else if constexpr (std::is_same_v<T, BracketToken>) {
-        // Print something for BracketToken
+        std::cout << "BracketToken'\n'";
     }
     else if constexpr (std::is_same_v<T, SymbolToken>) {
         std::cout << "ConstantToken with value " << arg.name << '\n';
@@ -28,27 +28,48 @@ int main() {
         // Print something for DotToken
     }
 }, token);
-  //tokenizer.Next();
+  tokenizer.Next();
   std::cout << "t";
-  //auto token2 = tokenizer.GetToken();
+  auto token2 = tokenizer.GetToken();
   std::visit([](auto&& arg) {
     using T = std::decay_t<decltype(arg)>;
     if constexpr (std::is_same_v<T, ConstantToken>) {
         std::cout << "ConstantToken2 with value " << arg.value << '\n';
     }
     else if constexpr (std::is_same_v<T, BracketToken>) {
-        // Print something for BracketToken
+        std::cout << "BracketToken'\n'";
     }
     else if constexpr (std::is_same_v<T, SymbolToken>) {
-        // Print something for SymbolToken
+        std::cout << "SymbolToken with value " << arg.name << '\n';
     }
     else if constexpr (std::is_same_v<T, QuoteToken>) {
-        // Print something for QuoteToken
+        std::cout << "Q";
     }
     else if constexpr (std::is_same_v<T, DotToken>) {
-        // Print something for DotToken
+        std::cout << "D";
     }
-}, token);
+}, token2);
+tokenizer.Next();
+  std::cout << "t";
+  auto token3 = tokenizer.GetToken();
+  std::visit([](auto&& arg) {
+    using T = std::decay_t<decltype(arg)>;
+    if constexpr (std::is_same_v<T, ConstantToken>) {
+        std::cout << "ConstantToken2 with value " << arg.value << '\n';
+    }
+    else if constexpr (std::is_same_v<T, BracketToken>) {
+        std::cout << "BracketToken'\n'";
+    }
+    else if constexpr (std::is_same_v<T, SymbolToken>) {
+        std::cout << "SymbolToken with value " << arg.name << '\n';
+    }
+    else if constexpr (std::is_same_v<T, QuoteToken>) {
+        std::cout << "Q";
+    }
+    else if constexpr (std::is_same_v<T, DotToken>) {
+        std::cout << "D";
+    }
+}, token3);
   bool a;
   if (token == Token{ConstantToken{2}}) {
     a = true;

@@ -40,5 +40,5 @@ class Tokenizer {
   Token GetToken();
  private:
   std::istream* _input_stream;
-  bool _is_end;
+  bool _is_end = false;
 };

@@ -25,72 +25,73 @@ Tokenizer::Tokenizer(std::istream* input)
   : _input_stream(input) {}
 
 bool Tokenizer::IsEnd() {
-        return _is_end;
-    }
+  return _input_stream->peek() == std::char_traits<char>::eof();
+}
 
 void Tokenizer::Next() {
-  auto t = _input_stream->peek();
-  if (t == std::istream::traits_type::eof()) {
-    _is_end = true;
-  }
+  _input_stream->get();
+  _is_end = _input_stream->peek() == std::char_traits<char>::eof();
+  _input_stream->unget();
 }
 
 Token Tokenizer::GetToken() {
- //auto ch = _input_stream->get();
- char ch;
- do {
-    if (_input_stream->eof()) {
+  char ch;
+  // Continue reading whitespace characters until a non-whitespace character is encountered
+  do {
+    if (_input_stream->eof()) {  // Check if end of file
       throw std::runtime_error("Unexpected end of file");
     }
     ch = _input_stream->get();
-  } while (std::isspace(ch));
- switch (ch) {
-  case '(':
-    //_input_stream->unget();
-    return BracketToken::LEFT;
-  case ')':
-    //_input_stream->unget();
-    return BracketToken::RIGHT;
-  case '\'':
-    {
-      QuoteToken token;
-      //_input_stream->unget();
-      return token;
-    }
-  default:
-  if (std::isalpha(ch)) { // If the character is a letter
-    std::string symbol;
-    while (std::isalpha(ch)) {
-      symbol += ch;
-      ch = _input_stream->get();
-    }
-    _input_stream->unget(); // Put back the non-letter character
-    return SymbolToken{symbol}; // Create a SymbolToken
-  } 
-  if (std::isdigit(ch) || ch == '-') {
-    int sign = 1;
-    int value = 0;
+  } while (std::isspace(ch) && ch != '(' && ch != ')');  // Don't consume parentheses here
 
-    if (ch == '-') {
-      sign = -1;
-      ch = _input_stream->get();
-    }
+  // Process non-whitespace characters
+  switch (ch) {
+    case '(':
+      return BracketToken::LEFT;
+    case ')':
+      return BracketToken::RIGHT;
+    case '\'':
+      return QuoteToken{};
+    default:
+      if (std::isalpha(ch) || ch == '+' || ch == '-' || ch == '*' || ch == '/') { 
+        std::string symbol;
+        do {
+          symbol += ch;
+          if (_input_stream->eof()) { // Check for EOF before getting next char
+            break;
+          }
+          ch = _input_stream->get();
+        } while (std::isalpha(ch) || ch == '+' || ch == '-' || ch == '*' || ch == '/');
+        if (ch != std::char_traits<char>::eof() && !std::isspace(ch)) _input_stream->unget(); // Put back the non-digit character if it's not a space or EOF
+        return SymbolToken{symbol};
+      } 
+      if (std::isdigit(ch) || ch == '-') {
+        int sign = 1;
+        int value = 0;
 
-    if (!std::isdigit(ch)) {
-      throw std::runtime_error("Expected a digit after '-'");
-    }
+        if (ch == '-') {
+          sign = -1;
+          if (_input_stream->peek() == std::istream::traits_type::eof()) { // Check for EOF before getting next char
+            throw std::runtime_error("Expected a digit after '-'");
+          }
+          ch = _input_stream->get();
+        }
 
-    do {
-      value = value * 10 + (ch - '0');
-      ch = _input_stream->get();
-    } while (std::isdigit(ch));
+        if (!std::isdigit(ch)) {
+          throw std::runtime_error("Expected a digit after '-'");
+        }
 
-    _input_stream->unget(); // Put back the non-digit character
-    return ConstantToken{value * sign};
-  }  else{
-      // Handle other cases if necessary or throw an error.
-      std::cout << ch << "\n";
-      throw std::runtime_error(std::string(&ch)+"xyj");
-    }
+        do {
+          value = value * 10 + (ch - '0');
+          if (_input_stream->eof()) { // Check for EOF before getting next char
+            break;
+          }
+          ch = _input_stream->get();
+        } while (std::isdigit(ch));
+        if (ch != std::char_traits<char>::eof() && !std::isspace(ch)) _input_stream->unget(); // Put back the non-digit character if it's not a space or EOF
+        return ConstantToken{value * sign};
+      }  
+      throw std::runtime_error("Unexpected character: " + std::string(1, ch));
   }
 }
+

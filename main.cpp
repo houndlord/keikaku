@@ -1,10 +1,13 @@
 #include <iostream>
 #include <sstream>
+//#pragma once
 
-#include "/home/houndlord/keikaku/lib/frontend/tokenizer.cpp"
+//#include "/home/houndlord/keikaku/include/frontend/tokenizer.hpp"
+#include "/home/houndlord/keikaku/include/frontend/parser.hpp"
 
 int main() {
-  std::stringstream s{"(x 42)"};
+  std::stringstream s{"(x 42 y)"};
+  /*
   Tokenizer tokenizer(&s);
   if (tokenizer.IsEnd() == false) {
     std::cout << "alex is awesome";
@@ -28,7 +31,7 @@ int main() {
         // Print something for DotToken
     }
 }, token);
-  tokenizer.Next();
+  //tokenizer.Next();
   std::cout << "t";
   auto token2 = tokenizer.GetToken();
   std::visit([](auto&& arg) {
@@ -49,7 +52,7 @@ int main() {
         std::cout << "D";
     }
 }, token2);
-tokenizer.Next();
+//tokenizer.Next();
   std::cout << "t";
   auto token3 = tokenizer.GetToken();
   std::visit([](auto&& arg) {
@@ -78,4 +81,8 @@ tokenizer.Next();
   }
   //std::cout << a;
   std::cout << "xxyj";
+  */
+
+  Tokenizer tokenizer(&s);
+  auto ast = Parse(tokenizer);
 }

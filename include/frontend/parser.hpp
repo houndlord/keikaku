@@ -34,5 +34,5 @@ public:
 };
 
 AstNodePtr Parse(Tokenizer& tokenizer);
-AstNodePtr ReadList(Tokenizer& tokenizer);
+std::pair<AstNodePtr, bool> ReadList(Tokenizer& tokenizer);
 AstNodePtr Read(Tokenizer& tokenizer, Token token);

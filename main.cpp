@@ -4,9 +4,10 @@
 
 //#include "/home/houndlord/keikaku/include/frontend/tokenizer.hpp"
 #include "/home/houndlord/keikaku/include/frontend/parser.hpp"
+#include "/home/houndlord/keikaku/include/codegen/ir_visitor.hpp"
 
 int main() {
-  std::stringstream s{"(x 42 y)"};
+  std::stringstream s{"(1 (2 (3 (4 5))))"};
   /*
   Tokenizer tokenizer(&s);
   if (tokenizer.IsEnd() == false) {

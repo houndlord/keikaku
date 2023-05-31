@@ -1,3 +1,7 @@
+#ifndef KEI_CODEGEN_CODEGEN_H
+#define KEI_CODEGEN_CODEGEN_H
+
+
 #include <memory>
 
 
@@ -21,3 +25,4 @@ class AstToIrVisitor {
   std::shared_ptr<IRFunction> current_function_;
   std::shared_ptr<IRBasicBlock> current_basic_block_;
 };
+#endif

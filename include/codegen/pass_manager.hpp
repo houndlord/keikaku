@@ -1,3 +1,7 @@
+#ifndef KEI_CODEGEN_PASS_MANAGER_H
+#define KEI_CODEGEN_PASS_MANAGER_H
+
+
 #include <vector>
 #include <memory>
 
@@ -22,3 +26,4 @@ class PassManager {
  private:
   std::vector<std::shared_ptr<Pass>> passes_;
 };
+#endif

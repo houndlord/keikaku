@@ -1,3 +1,7 @@
+#ifndef  KEI_FRONTEND_TOKENIZER_H
+#define KEI_FRONTEND_TOKENIZER_H
+
+
 #include <variant>
 #include <optional>
 #include <istream>
@@ -42,3 +46,4 @@ class Tokenizer {
   std::istream* _input_stream;
   bool _is_end = false;
 };
+#endif

@@ -1,3 +1,7 @@
+#ifndef KEI_UTIL_UTIL_H
+#define KEI_UTIL_UTIL_H
+
+
 #include <set>
 #include <string>
 
@@ -32,3 +36,4 @@ class Environment {
  private:
   std::map<std::string, SymbolInfo> symbols_;
 };
+#endif

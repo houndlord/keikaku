@@ -1,3 +1,7 @@
+#ifndef KEI_FRONTEND_PARSER_H
+#define KEI_FRONTEND_PARSER_H
+
+
 #include <memory>
 #include <vector>
 #include <string>
@@ -36,3 +40,4 @@ public:
 AstNodePtr Parse(Tokenizer& tokenizer);
 std::pair<AstNodePtr, bool> ReadList(Tokenizer& tokenizer);
 AstNodePtr Read(Tokenizer& tokenizer, Token token);
+#endif

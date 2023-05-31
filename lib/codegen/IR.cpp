@@ -2,9 +2,9 @@
 
 #include "codegen/IR.hpp"
 
-//std::string IRProgram::GetNextTempVar() {
-//  return "temp_" + std::to_string(temp_var_counter_++);
-//}
+std::string IRProgram::GetNextTempVar() {
+  return "temp_" + std::to_string(temp_var_counter_++);
+}
 
 Jump::Jump(const std::shared_ptr<IRBasicBlock>& target) : target_(target) {}
 

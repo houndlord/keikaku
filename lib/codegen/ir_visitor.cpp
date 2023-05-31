@@ -60,7 +60,7 @@ std::shared_ptr<IRValue> AstToIrVisitor::GeneratePhiNode(
   const std::shared_ptr<IRValue>& false_value,
   const std::shared_ptr<IRBasicBlock>& merge_block) {
   // Create a temporary variable to store the result of the Phi node
-  std::string temp_var_name = current_function_->GetNextTempVar();
+  std::string temp_var_name = ir_program_->GetNextTempVar();
   auto temp_var = std::make_shared<IRValue>(temp_var_name, IRValueType::Temporary);
 
   // Create the Phi instruction

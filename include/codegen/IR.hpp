@@ -1,3 +1,7 @@
+#ifndef KEI_CODEGEN_IR_H
+#define KEI_CODEGEN_IR_H
+
+
 #include <memory>
 #include <vector>
 #include <string>
@@ -171,9 +175,10 @@ class IRProgram {
   void add_function(const std::shared_ptr<IRFunction>& function);
   const std::vector<std::shared_ptr<IRFunction>>& get_functions() const;
 
-  //std::string GetNextTempVar();
+  std::string GetNextTempVar();
 
  private:
   std::vector<std::shared_ptr<IRFunction>> functions_;
   int temp_var_counter_ = 0;
 };
+#endif

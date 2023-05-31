@@ -4,7 +4,7 @@
 
 //#include "/home/houndlord/keikaku/include/frontend/tokenizer.hpp"
 #include "/home/houndlord/keikaku/include/frontend/parser.hpp"
-#include "/home/houndlord/keikaku/include/codegen/ir_visitor.hpp"
+//#include "/home/houndlord/keikaku/include/codegen/ir_visitor.hpp"
 
 int main() {
   std::stringstream s{"(1 (2 (3 (4 5))))"};
@@ -85,5 +85,5 @@ int main() {
   */
 
   Tokenizer tokenizer(&s);
-  auto ast = Parse(tokenizer);
+  //auto ast = Parse(tokenizer);
 }

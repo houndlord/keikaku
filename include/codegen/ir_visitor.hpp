@@ -1,3 +1,7 @@
+#ifndef KEI_CODEGEN_IR_VISITOR_H
+#define KEI_CODEGEN_IR_VISITOR_H
+
+
 #include <memory>
 #include <string>
 
@@ -42,3 +46,4 @@ class AstToIrVisitor {
 
   Environment environment_;
 };
+#endif

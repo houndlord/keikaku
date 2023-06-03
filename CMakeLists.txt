@@ -27,24 +27,8 @@ if(BUILD_TESTS)
     add_subdirectory(testing)
 endif()
 
-#if (BUIILD_TESTS) 
-#enable_testing()
-#  include(GoogleTest)
-#  include(FetchContent)
-
-#  FetchContent_Declare(
-#    googletest
-#    GIT_REPOSITORY https://github.com/google/googletest.git
-#    GIT_TAG        master
-#  )
-#
-#  FetchContent_MakeAvailable(googletest)
-#
-#  add_subdirectory(testing)
-#endif()
-
 add_executable(
   main ${CMAKE_SOURCE_DIR}/main.cpp
 )
 
-target_link_libraries(main frontend)
+target_link_libraries(main frontend codegen)

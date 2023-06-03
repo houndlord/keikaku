@@ -104,6 +104,10 @@ public:
   Phi(const std::string& dest,
       const std::shared_ptr<IRValue>& true_value,
       const std::shared_ptr<IRValue>& false_value);
+  
+  Phi(const Phi& other);
+  Phi(Phi&& other) noexcept;
+  ~Phi() = default;
 
   const std::string& get_dest() const;
   const std::shared_ptr<IRValue>& get_true_value() const;
@@ -140,6 +144,10 @@ class Branch : public IRInstruction {
   Branch(const std::shared_ptr<IRValue>& condition,
          const std::shared_ptr<IRBasicBlock>& true_target,
          const std::shared_ptr<IRBasicBlock>& false_target);
+
+  Branch(const Branch& other);
+  Branch(Branch&& other) noexcept;
+  ~Branch() = default;
 
   const std::shared_ptr<IRValue>& GetCondition() const;
   const std::shared_ptr<IRBasicBlock>& GetTrueTarget() const;

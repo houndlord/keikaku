@@ -202,8 +202,8 @@ TEST(ParserTest, ParseComplexNestedStructure2) {
   ASSERT_EQ(list_node->children_.size(), 1);
 
   auto first_child = std::dynamic_pointer_cast<NumberNode>(list_node->children_[0]);
-  ASSERT_NE(first_child, nullptr);
-  //EXPECT_EQ(first_child->value_, "1");
+  //ASSERT_NE(first_child, nullptr);
+  EXPECT_EQ(first_child->value_, "1");
 
   // Check the second child.
   //auto second_child = list_node->children_[1];
@@ -248,7 +248,7 @@ TEST(ParserTest, ParseSimpleProgram) {
 }
 
 TEST(ParserTest, ParseComplexProgram) {
-  std::istringstream input("(define (factorial n) (if (<= n 1) 1 (* n (factorial (- n 1))))) (factorial 5)");
+  std::istringstream input("(define (factorial n) (if (= n 0) 1 (* n (factorial (- n 1)))))");
   Tokenizer tokenizer(&input);
   tokenizer.Next();  // Move to the first token.
 

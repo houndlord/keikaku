@@ -37,19 +37,10 @@ void AstToIrVisitor::GenerateConditionalJump(
   const std::shared_ptr<IRBasicBlock>& false_block) {
   std::string condition_name;
 
-  // Check the type of the condition IRValue and get the appropriate name
-  switch (condition->GetType()) {
-  case IRValueType::Constant:
-    condition_name = std::to_string(condition->GetConstantValue());
-    break;
-  case IRValueType::Variable:
-  case IRValueType::Temporary:
-    condition_name = condition->GetName();
-    break;
-  }
+
   
   // Create a Branch instruction with the condition name and target blocks
-  auto branch = std::make_shared<Branch>(condition_name, true_block, false_block);
+  auto branch = std::make_shared<Branch>(condition, true_block, false_block);
   
   // Add the Branch instruction to the current basic block
   current_basic_block_->add_instruction(branch);
@@ -65,7 +56,7 @@ std::shared_ptr<IRValue> AstToIrVisitor::GeneratePhiNode(
 
   // Create the Phi instruction
   auto phi_instr = std::make_shared<Phi>(
-  temp_var->GetName(), true_value->GetName(), false_value->GetName());
+  temp_var_name, true_value, false_value);
 
   // Add the Phi instruction to the merge_block
   merge_block->add_instruction(phi_instr);
@@ -228,7 +219,7 @@ void AstToIrVisitor::VisitList(const std::shared_ptr<ListNode>& node) {
     false_block->add_instruction(std::make_shared<Jump>(merge_block));
 
     current_basic_block_ = merge_block;
-    last_value_ = GeneratePhiNode(true_value, false_value);
+    last_value_ = GeneratePhiNode(true_value, false_value, merge_block);
 
     current_function_->add_basic_block(true_block);
     current_function_->add_basic_block(false_block);

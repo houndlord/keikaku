@@ -1,0 +1,3 @@
+[] Fix failing parser tests.
+[] Add support for comparsion operators.
+[] Add initial machine code generation.

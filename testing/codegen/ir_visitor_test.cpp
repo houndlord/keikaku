@@ -24,5 +24,36 @@ TEST_F(AstToIrVisitorTest, TestVisitSymbol) {
   auto a = visitor->GenerateIR(node);
 }
 
+TEST_F(AstToIrVisitorTest, Test1) {
+  // Assuming 'SymbolNode' takes a string in its constructor
+  std::istringstream input("((123 abc) (a def))");
+  Tokenizer tokenizer(&input);
+  auto ast = Parse(tokenizer);
+
+  // Run the method under test
+  auto a = visitor->GenerateIR(ast);
+}
+
+TEST_F(AstToIrVisitorTest, Test2) {
+  // Assuming 'SymbolNode' takes a string in its constructor
+  std::istringstream input("(define (square x) (* x x)) (define (sum-of-squares x y) (+ (square x) (square y))) (sum-of-squares 3 4)");
+  Tokenizer tokenizer(&input);
+  auto ast = Parse(tokenizer);
+
+  // Run the method under test
+  auto a = visitor->GenerateIR(ast);
+}
+
+
+TEST_F(AstToIrVisitorTest, Test3) {
+  // Assuming 'SymbolNode' takes a string in its constructor
+  std::istringstream input("(define (factorial n) (if (zero n) 1 (* n (factorial (- n 1)))))");
+  Tokenizer tokenizer(&input);
+  auto ast = Parse(tokenizer);
+
+  // Run the method under test
+  auto a = visitor->GenerateIR(ast);
+}
+
 // Continue with tests for other methods...
 

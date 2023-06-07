@@ -39,11 +39,15 @@ class IRValue {
 class IRInstruction {
 public:
   virtual ~IRInstruction() = default;
+
+  // A method to return the variables used in the instruction
+  virtual std::vector<std::string> GetUsedVars() const = 0;
 };
 
 class Add : public IRInstruction {
 public:
   Add(const std::string& dest, const std::string& src1, const std::string& src2);
+  std::vector<std::string> GetUsedVars() const override;
 
   const std::string& get_dest() const;
   const std::string& get_src1() const;
@@ -58,6 +62,7 @@ private:
 class Sub : public IRInstruction {
 public:
   Sub(const std::string& dest, const std::string& src1, const std::string& src2);
+  std::vector<std::string> GetUsedVars() const override;
 
   const std::string& get_dest() const;
   const std::string& get_src1() const;
@@ -72,6 +77,7 @@ private:
 class Mul : public IRInstruction {
 public:
   Mul(const std::string& dest, const std::string& src1, const std::string& src2);
+  std::vector<std::string> GetUsedVars() const override;
 
   const std::string& get_dest() const;
   const std::string& get_src1() const;

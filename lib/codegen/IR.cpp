@@ -2,6 +2,11 @@
 
 #include "codegen/IR.hpp"
 
+
+std::vector<std::string> Sub::GetUsedVars() const {
+  return {src1_, src2_};
+}
+
 Branch::Branch(const std::shared_ptr<IRValue>& condition,
                const std::shared_ptr<IRBasicBlock>& true_target,
                const std::shared_ptr<IRBasicBlock>& false_target)

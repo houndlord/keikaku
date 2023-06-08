@@ -31,4 +31,9 @@ add_executable(
   main ${CMAKE_SOURCE_DIR}/main.cpp
 )
 
-target_link_libraries(main frontend codegen)
+add_executable(
+  kei ${CMAKE_SOURCE_DIR}/kei.cpp
+)
+
+target_link_libraries(main frontend codegen util)
+target_link_libraries(kei frontend codegen util)

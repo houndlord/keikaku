@@ -6,6 +6,7 @@
 #include <vector>
 #include <string>
 #include <variant>
+#include <string>
 
 
 enum class IRValueType {
@@ -37,67 +38,73 @@ class IRValue {
 };
 
 class IRInstruction {
-public:
+ public:
   virtual ~IRInstruction() = default;
 
   // A method to return the variables used in the instruction
   virtual std::vector<std::string> GetUsedVars() const = 0;
+  virtual std::string Print() const = 0;
 };
 
 class Add : public IRInstruction {
-public:
+ public:
   Add(const std::string& dest, const std::string& src1, const std::string& src2);
   std::vector<std::string> GetUsedVars() const override;
+  std::string Print() const override;
 
   const std::string& get_dest() const;
   const std::string& get_src1() const;
   const std::string& get_src2() const;
 
-private:
+ private:
   std::string dest_;
   std::string src1_;
   std::string src2_;
 };
 
 class Sub : public IRInstruction {
-public:
+ public:
   Sub(const std::string& dest, const std::string& src1, const std::string& src2);
   std::vector<std::string> GetUsedVars() const override;
+  std::string Print() const override;
 
   const std::string& get_dest() const;
   const std::string& get_src1() const;
   const std::string& get_src2() const;
 
-private:
+ private:
   std::string dest_;
   std::string src1_;
   std::string src2_;
 };
 
 class Mul : public IRInstruction {
-public:
+ public:
   Mul(const std::string& dest, const std::string& src1, const std::string& src2);
   std::vector<std::string> GetUsedVars() const override;
+  std::string Print() const override;
 
   const std::string& get_dest() const;
   const std::string& get_src1() const;
   const std::string& get_src2() const;
 
-private:
+ private:
   std::string dest_;
   std::string src1_;
   std::string src2_; 
 };
 
 class Div : public IRInstruction {
-public:
+ public:
   Div(const std::string& dest, const std::string& src1, const std::string& src2);
+  std::vector<std::string> GetUsedVars() const override;
+  std::string Print() const override;
 
   const std::string& get_dest() const;
   const std::string& get_src1() const;
   const std::string& get_src2() const;
 
-private:
+ private:
   std::string dest_;
   std::string src1_;
   std::string src2_;
@@ -106,7 +113,7 @@ private:
 // Similar classes for other instructions like Sub, Mul, Div, etc.
 
 class Phi : public IRInstruction {
-public:
+ public:
   Phi(const std::string& dest,
       const std::shared_ptr<IRValue>& true_value,
       const std::shared_ptr<IRValue>& false_value);
@@ -118,8 +125,11 @@ public:
   const std::string& get_dest() const;
   const std::shared_ptr<IRValue>& get_true_value() const;
   const std::shared_ptr<IRValue>& get_false_value() const;
+  
+  std::vector<std::string> GetUsedVars() const override;
+  std::string Print() const override;
 
-private:
+ private:
   std::string dest_;
   std::shared_ptr<IRValue> true_value_;
   std::shared_ptr<IRValue> false_value_;
@@ -140,6 +150,8 @@ class Jump : public IRInstruction {
   explicit Jump(const std::shared_ptr<IRBasicBlock>& target);
 
   const std::shared_ptr<IRBasicBlock>& GetTarget() const;
+  std::vector<std::string> GetUsedVars() const override;
+  std::string Print() const override;
 
  private:
   std::shared_ptr<IRBasicBlock> target_;
@@ -158,6 +170,8 @@ class Branch : public IRInstruction {
   const std::shared_ptr<IRValue>& GetCondition() const;
   const std::shared_ptr<IRBasicBlock>& GetTrueTarget() const;
   const std::shared_ptr<IRBasicBlock>& GetFalseTarget() const;
+  std::vector<std::string> GetUsedVars() const override;
+  std::string Print() const override;
 
  private:
   std::shared_ptr<IRValue> condition_;
@@ -165,6 +179,20 @@ class Branch : public IRInstruction {
   std::shared_ptr<IRBasicBlock> false_target_;
 };
 
+class IRFunctionCall : public IRInstruction {
+ public:
+  IRFunctionCall(const std::string& function_name, const std::vector<std::shared_ptr<IRValue>>& args)
+      : function_name_(function_name), args_(args) {}
+
+  const std::string& get_function_name() const { return function_name_; }
+  const std::vector<std::shared_ptr<IRValue>>& get_args() const { return args_; }
+  std::vector<std::string> GetUsedVars() const override;
+  std::string Print() const override;
+
+ private:
+  std::string function_name_;
+  std::vector<std::shared_ptr<IRValue>> args_;
+};
 
 class IRFunction {
  public:
@@ -176,13 +204,13 @@ class IRFunction {
   void add_basic_block(const std::shared_ptr<IRBasicBlock>& basic_block);
   const std::vector<std::shared_ptr<IRBasicBlock>>& get_basic_blocks() const;
 
+  std::string Print() const;
+
 private:
   std::string name_;
   std::vector<std::string> parameters_;
   std::vector<std::shared_ptr<IRBasicBlock>> basic_blocks_;
 };
-
-
 
 class IRProgram {
  public:
@@ -190,6 +218,8 @@ class IRProgram {
   const std::vector<std::shared_ptr<IRFunction>>& get_functions() const;
 
   std::string GetNextTempVar();
+
+  std::string Print() const;
 
  private:
   std::vector<std::shared_ptr<IRFunction>> functions_;

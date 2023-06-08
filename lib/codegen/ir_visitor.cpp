@@ -9,8 +9,6 @@ IRValueType IRValue::GetType() const {
   return type_;
 }
 
-
-
 int IRValue::GetConstantValue() const {
   if (type_ != IRValueType::Constant) {
     throw std::runtime_error("Attempting to get constant value from a non-constant IRValue.");
@@ -25,7 +23,7 @@ const std::string& IRValue::GetName() const {
   return std::get<std::string>(value_);
 }
 
-std::shared_ptr<IRProgram> AstToIrVisitor::AstToIrVisitor::GenerateIR(const AstNodePtr& ast) {
+std::shared_ptr<IRProgram> AstToIrVisitor::GenerateIR(const AstNodePtr& ast) {
   ir_program_ = std::make_shared<IRProgram>();
   Visit(ast);
   return ir_program_;
@@ -63,19 +61,6 @@ std::shared_ptr<IRValue> AstToIrVisitor::GeneratePhiNode(
 
   // Return the temporary variable that holds the result of the Phi node
   return temp_var;
-}
-
-
-void AstToIrVisitor::Visit(const AstNodePtr& node) {
-  if (auto symbol_node = std::dynamic_pointer_cast<SymbolNode>(node)) {
-    VisitSymbol(symbol_node);
-  } else if (auto number_node = std::dynamic_pointer_cast<NumberNode>(node)) {
-    VisitNumber(number_node);
-  } else if (auto list_node = std::dynamic_pointer_cast<ListNode>(node)) {
-    VisitList(list_node);
-  } else {
-    // Handle error: unexpected AST node type
-  }
 }
 
 void AstToIrVisitor::VisitSymbol(const std::shared_ptr<SymbolNode>& node) {
@@ -283,4 +268,34 @@ void AstToIrVisitor::VisitList(const std::shared_ptr<ListNode>& node) {
   std::vector<AstNodePtr> args(node->children_.begin() + 1, node->children_.end());
   GenerateFunctionCall(first_symbol_node->value_, args);
 }
+}
+
+void AstToIrVisitor::Visit(const AstNodePtr& node) {
+  if (auto symbol_node = std::dynamic_pointer_cast<SymbolNode>(node)) {
+    VisitSymbol(symbol_node);
+  } else if (auto number_node = std::dynamic_pointer_cast<NumberNode>(node)) {
+    VisitNumber(number_node);
+  } else if (auto list_node = std::dynamic_pointer_cast<ListNode>(node)) {
+    VisitList(list_node);
+  } else {
+    // Handle error: unexpected AST node type
+  }
+}
+
+void AstToIrVisitor::GenerateFunctionCall(const std::string& function_name, const std::vector<AstNodePtr>& args) {
+  // Convert AST nodes to IR values
+  std::vector<std::shared_ptr<IRValue>> ir_args;
+  for (const auto& arg : args) {
+    Visit(arg);  // assuming this updates last_value_
+    ir_args.push_back(last_value_);
+  }
+
+  // Create IRFunctionCall object
+  auto func_call = std::make_shared<IRFunctionCall>(function_name, ir_args);
+
+  // You might need to add this function call to your current basic block, like:
+  // current_basic_block_->add_instruction(func_call);
+
+  // Update the last_value_ to this function call if you're going to use its result later
+  //last_value_ = func_call;
 }

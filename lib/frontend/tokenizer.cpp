@@ -1,9 +1,11 @@
 #include "frontend/tokenizer.hpp"
 
+
 #include <cctype>
 #include <istream>
 #include <locale>
 #include <iostream>
+
 
 bool SymbolToken::operator==(const SymbolToken& other) const {
     return name == other.name;

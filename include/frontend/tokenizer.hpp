@@ -1,10 +1,11 @@
-#ifndef  KEI_FRONTEND_TOKENIZER_H
+#ifndef KEI_FRONTEND_TOKENIZER_H
 #define KEI_FRONTEND_TOKENIZER_H
 
 
 #include <variant>
 #include <optional>
 #include <istream>
+
 
 struct SymbolToken {
     std::string name;
@@ -44,6 +45,6 @@ class Tokenizer {
   Token GetToken();
  private:
   std::istream* _input_stream;
-  bool _is_end = false;
+  bool _is_end;
 };
 #endif

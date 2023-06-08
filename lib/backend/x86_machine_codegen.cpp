@@ -113,20 +113,6 @@ std::vector<uint8_t> X86CodeGenerator::GenerateInstructionCode(const std::shared
     // Example: mov eax, [operand1]
     //          add eax, [operand2]
     //          mov [result], eax
-
-    // Generate the machine code for mov eax, [operand1]
-    instructionCode.push_back(0x8B);  // mov opcode
-    instructionCode.push_back(0x08);  // displacement 8 bytes
-    // ...
-
-    // Generate the machine code for add eax, [operand2]
-    instructionCode.push_back(0x03);  // add opcode
-    instructionCode.push_back(0x10);  // displacement 16 bytes
-    // ...
-
-    // Generate the machine code for mov [result], eax
-    instructionCode.push_back(0x89);  // mov opcode
-    instructionCode.push_back(0x18);  // displacement 24 bytes
     // ...
   }
   return instructionCode;

@@ -11,7 +11,8 @@ The aim of this project is to learn compilers and Scheme is choosen mainly for s
 
 ```
 git clone https://github.com/houndlord/keikaku.git
-
+```
+```
 $ mkdir build
 $ cd build
 $ cmake ..

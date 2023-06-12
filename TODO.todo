@@ -1,3 +1,7 @@
 [] Fix failing parser tests.
-[] Add support for comparsion operators.
+[x] Add support for comparsion operators.
 [] Add initial machine code generation.
+[] Add support for '?' character.
+[] Thoroughly test codegen.
+[] Add more tests for frontend.
+[] Add tests for kei.cpp.

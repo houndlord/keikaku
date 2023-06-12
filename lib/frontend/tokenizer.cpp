@@ -8,19 +8,23 @@
 
 
 bool SymbolToken::operator==(const SymbolToken& other) const {
-    return name == other.name;
+  return name == other.name;
 }
 
 bool QuoteToken::operator==(const QuoteToken& ) const {
-    return true;
+  return true;
 }
 
 bool DotToken::operator==(const DotToken& ) const {
-    return true;
+  return true;
 }
 
 bool ConstantToken::operator==(const ConstantToken& other) const {
-    return value == other.value;
+  return value == other.value;
+}
+
+bool EOFToken::operator==(const EOFToken& ) const {
+  return true;
 }
 
 Tokenizer::Tokenizer(std::istream* input)
@@ -41,7 +45,7 @@ Token Tokenizer::GetToken() {
   // Continue reading whitespace characters until a non-whitespace character is encountered
   do {
     if (_input_stream->eof()) {  // Check if end of file
-      throw std::runtime_error("Unexpected end of file");
+      return EOFToken{};
     }
     ch = _input_stream->get();
   } while (std::isspace(ch) && ch != '(' && ch != ')');  // Don't consume parentheses here
@@ -55,7 +59,10 @@ Token Tokenizer::GetToken() {
     case '\'':
       return QuoteToken{};
     default:
-      if (std::isalpha(ch) || ch == '+' || ch == '-' || ch == '*' || ch == '/') { 
+      if (ch == std::char_traits<char>::eof()) {
+        return EOFToken{};
+      }
+      if (std::isalpha(ch) || ch == '+' || ch == '-' || ch == '*' || ch == '/' || ch == '<' || ch == '>' || ch == '=') { 
         std::string symbol;
         do {
           symbol += ch;
@@ -63,8 +70,8 @@ Token Tokenizer::GetToken() {
             break;
           }
           ch = _input_stream->get();
-        } while (std::isalpha(ch) || ch == '+' || ch == '-' || ch == '*' || ch == '/');
-        if (ch != std::char_traits<char>::eof() && !std::isspace(ch)) _input_stream->unget(); // Put back the non-digit character if it's not a space or EOF
+        } while (std::isalpha(ch) || ch == '+' || ch == '-' || ch == '*' || ch == '/' || ch == '<' || ch == '>' || ch == '=');
+        if (ch != std::char_traits<char>::eof() && !std::isspace(ch)) _input_stream->unget(); // Put back the non-symbol character if it's not a space or EOF
         return SymbolToken{symbol};
       } 
       if (std::isdigit(ch) || ch == '-') {
@@ -93,7 +100,6 @@ Token Tokenizer::GetToken() {
         if (ch != std::char_traits<char>::eof() && !std::isspace(ch)) _input_stream->unget(); // Put back the non-digit character if it's not a space or EOF
         return ConstantToken{value * sign};
       }  
-      throw std::runtime_error("Unexpected character: " + std::string(1, ch));
+    throw std::runtime_error("Unexpected character: " + std::string(1, ch));
   }
 }
-

@@ -12,9 +12,8 @@ include_directories(${CMAKE_SOURCE_DIR}/include)
 
 
 add_subdirectory(lib)
-#include_directories(${CMAKE_SOURCE_DIR}/lib)
 
-option(BUILD_TESTS "Build tests" ON)
+option(BUILD_TESTS "Build tests" OFF)
 
 if(BUILD_TESTS)
     enable_testing()

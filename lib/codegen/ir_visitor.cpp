@@ -1,31 +1,52 @@
 #include "codegen/ir_visitor.hpp"
+#include <iostream>
 
 
-IRValue::IRValue(int constant_value) : type_(IRValueType::Constant), value_(constant_value) {}
+// Constructor for constant values
+IRValue::IRValue(int constant_value) : type_(IRValueType::Constant), value_(constant_value) {
+  std::cerr << "Created a Constant IRValue with value: " << constant_value << std::endl;
+}
 
-IRValue::IRValue(const std::string& name, IRValueType type) : type_(type), value_(name) {}
+// Constructor for variable and temporary values
+IRValue::IRValue(const std::string& name, IRValueType type) : type_(type), value_(name) {
+  std::cerr << "Created a " << (type == IRValueType::Variable ? "Variable" : "Temporary") << " IRValue with name: " << name << std::endl;
+}
 
 IRValueType IRValue::GetType() const {
   return type_;
 }
 
 int IRValue::GetConstantValue() const {
-  if (type_ != IRValueType::Constant) {
-    throw std::runtime_error("Attempting to get constant value from a non-constant IRValue.");
+  if (std::holds_alternative<int>(value_)) {
+    return std::get<int>(value_);
+  } else {
+    throw std::runtime_error("Attempted to get constant value, but IRValue holds a string.");
   }
-  return std::get<int>(value_);
 }
 
 const std::string& IRValue::GetName() const {
-  if (type_ == IRValueType::Constant) {
-    throw std::runtime_error("Attempting to get name from a constant IRValue.");
+  if (std::holds_alternative<std::string>(value_)) {
+    return std::get<std::string>(value_);
+  } else {
+    throw std::runtime_error("Attempted to get name, but IRValue holds an int.");
   }
-  return std::get<std::string>(value_);
 }
+
 
 std::shared_ptr<IRProgram> AstToIrVisitor::GenerateIR(const AstNodePtr& ast) {
   ir_program_ = std::make_shared<IRProgram>();
+
+  // Create a "main" function and set it as the current function
+  current_function_ = std::make_shared<IRFunction>("main", std::vector<std::string>());
+  ir_program_->add_function(current_function_);
+
+  // Create an entry basic block for the "main" function
+  current_basic_block_ = std::make_shared<IRBasicBlock>();
+  current_function_->add_basic_block(current_basic_block_);
+
+  // Visit the AST
   Visit(ast);
+
   return ir_program_;
 }
 
@@ -95,19 +116,54 @@ void AstToIrVisitor::VisitSymbol(const std::shared_ptr<SymbolNode>& node) {
 */
 
 void AstToIrVisitor::VisitNumber(const std::shared_ptr<NumberNode>& node) {
-  // Create an IRValue for the constant number
-  last_value_ = std::make_shared<IRValue>(node->value_, IRValueType::Constant);
+  std::cerr << "VisitNumber is Called\n";
+
+  // Create a new IRValue to hold this number
+  auto number_value = std::make_shared<IRValue>(std::stoi(node->value_));
+
+  // Log that we've created a new constant
+  std::cerr << "Visit number visited following:" << number_value<<std::endl; 
+
+  // Save this as the last value we've visited
+  last_value_ = number_value;
 }
+
 
     
 void AstToIrVisitor::VisitList(const std::shared_ptr<ListNode>& node) {
+  std::cerr << "VisitList is Called" << std::endl;
   if (node->children_.empty()) {
     // Empty list, do nothing
     return;
   }
+  // If the first node is a list, visit it recursively
+  if (auto inner_list_node = std::dynamic_pointer_cast<ListNode>(node->children_[0])) {
+    VisitList(inner_list_node);
+    return;
+  }
+  for (const auto& child_node : node->children_) {
+  if (auto symbol_node = std::dynamic_pointer_cast<SymbolNode>(child_node)) {
+    std::cerr << "ListNode child is SymbolNode with value: " << symbol_node->value_ << std::endl;
+  } else if (auto number_node = std::dynamic_pointer_cast<NumberNode>(child_node)) {
+    std::cerr << "ListNode child is NumberNode with value: " << number_node->value_ << std::endl;
+  } else if (auto inner_list_node = std::dynamic_pointer_cast<ListNode>(child_node)) {
+    std::cerr << "ListNode child is ListNode with size: " << inner_list_node->children_.size() << std::endl;
+  } else {
+    std::cerr << "ListNode child is of unknown type." << std::endl;
+  }
+  }
+
 
   auto first_node = node->children_[0];
   auto first_symbol_node = std::dynamic_pointer_cast<SymbolNode>(first_node);
+  
+  if (!first_symbol_node) {
+    std::cerr << "First node is not a symbol." << std::endl;
+    return;
+  }
+  
+  std::cerr << "First symbol node value: " << first_symbol_node->value_ << std::endl;
+
 
   if (!first_symbol_node) {
     // Handle the error: the first element of the list is not a symbol
@@ -268,14 +324,19 @@ void AstToIrVisitor::VisitList(const std::shared_ptr<ListNode>& node) {
   std::vector<AstNodePtr> args(node->children_.begin() + 1, node->children_.end());
   GenerateFunctionCall(first_symbol_node->value_, args);
 }
+std::cerr << "Exiting VisitList" << std::endl;
 }
 
 void AstToIrVisitor::Visit(const AstNodePtr& node) {
+  std::cerr << "Visit is Called" << std::endl;
   if (auto symbol_node = std::dynamic_pointer_cast<SymbolNode>(node)) {
+    std::cerr << "Visit visiting SymbolNode " << std::endl;
     VisitSymbol(symbol_node);
   } else if (auto number_node = std::dynamic_pointer_cast<NumberNode>(node)) {
+    std::cerr << "Visit visiting NumberNode " << std::endl;
     VisitNumber(number_node);
   } else if (auto list_node = std::dynamic_pointer_cast<ListNode>(node)) {
+    std::cerr << "Visit visiting ListNode " << std::endl;
     VisitList(list_node);
   } else {
     // Handle error: unexpected AST node type
@@ -283,6 +344,8 @@ void AstToIrVisitor::Visit(const AstNodePtr& node) {
 }
 
 void AstToIrVisitor::GenerateFunctionCall(const std::string& function_name, const std::vector<AstNodePtr>& args) {
+  std::cerr << "Generate FCall is Called" << std::endl;
+
   // Convert AST nodes to IR values
   std::vector<std::shared_ptr<IRValue>> ir_args;
   for (const auto& arg : args) {
@@ -290,12 +353,23 @@ void AstToIrVisitor::GenerateFunctionCall(const std::string& function_name, cons
     ir_args.push_back(last_value_);
   }
 
+  std::cerr << "Function name: " << function_name << std::endl;
+  std::cerr << "Function arguments: " << std::endl;
+  for(const auto& ir_arg: ir_args) {
+    std::cerr << "Arg type: " << static_cast<int>(ir_arg->GetType()) << std::endl;
+    if(ir_arg->GetType() == IRValueType::Constant) {
+      std::cerr << "Arg value: " << ir_arg->GetConstantValue() << std::endl;
+    } else if (ir_arg->GetType() == IRValueType::Variable || ir_arg->GetType() == IRValueType::Temporary) {
+      std::cerr << "Arg name: " << ir_arg->GetName() << std::endl;
+    }
+  }
+
   // Create IRFunctionCall object
   auto func_call = std::make_shared<IRFunctionCall>(function_name, ir_args);
 
-  // You might need to add this function call to your current basic block, like:
-  // current_basic_block_->add_instruction(func_call);
+  // Add this function call to your current basic block
+  current_basic_block_->add_instruction(func_call);
 
-  // Update the last_value_ to this function call if you're going to use its result later
-  //last_value_ = func_call;
+  // Update the last_instruction_ to this function call if you're going to use its result later
+  //last_instruction_ = func_call;
 }

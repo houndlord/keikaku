@@ -8,34 +8,39 @@
 
 
 struct SymbolToken {
-    std::string name;
-    bool operator == (const SymbolToken& other) const;
+  std::string name;
+  bool operator == (const SymbolToken& other) const;
 };
 
 struct QuoteToken {
-    bool operator == (const QuoteToken& ) const;
+  bool operator == (const QuoteToken& ) const;
 };
 
 struct DotToken {
-    bool operator == (const DotToken& ) const;
+  bool operator == (const DotToken& ) const;
 };
 
 enum class BracketToken {
-    LEFT, RIGHT
+  LEFT, RIGHT
 };
 
 struct ConstantToken {
-    int value;
-    bool operator == (const ConstantToken& other) const;
+  int value;
+  bool operator == (const ConstantToken& other) const;
+};
+
+struct EOFToken {
+  bool operator==(const EOFToken&) const;
 };
 
 typedef std::variant<
-    ConstantToken,
-    BracketToken,
-    SymbolToken,
-    QuoteToken,
-    DotToken>
-    Token;
+  ConstantToken,
+  BracketToken,
+  SymbolToken,
+  QuoteToken,
+  DotToken,
+	EOFToken>
+  Token;
 
 class Tokenizer {
  public:

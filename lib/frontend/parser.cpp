@@ -1,12 +1,32 @@
-#include "frontend/parser.hpp"
-
 #include <cstddef>
 #include <memory>
 #include <string>
 #include <utility>
 
+
+#include "frontend/parser.hpp"
+
+
+std::string SymbolNode::ToString(int indent) const {
+  std::string indention(indent, ' ');
+  return indention + "SYMBOL: " + value_;
+}
+
+std::string ListNode::ToString(int indent) const {
+  std::string indention(indent, ' ');
+  std::string result = indention + "List:\n";
+  for (const auto& child : children_) {
+    result += child->ToString(indent + 2) + "\n";
+  }
+  return result;
+}
+
+std::string NumberNode::ToString(int indent) const {
+  std::string indention(indent, ' ');
+  return indention + "NUMBER: " + value_;
+}
+
 AstNodePtr Read(Tokenizer& tokenizer, Token token) {
-  //tokenizer.Next();
   if (std::holds_alternative<ConstantToken>(token)) {
     return std::make_shared<NumberNode>(
         std::to_string(std::get<ConstantToken>(token).value));
@@ -25,12 +45,14 @@ std::pair<AstNodePtr, bool> ReadList(Tokenizer& tokenizer) {
 
   while (!tokenizer.IsEnd()) {
     auto token = tokenizer.GetToken();
+    if (std::holds_alternative<EOFToken>(token)) {
+      break;
+    }
     if (token == Token{BracketToken::RIGHT}) {
       consume_next = false;
       break;
     }
     node->children_.push_back(Read(tokenizer, token));
-    //tokenizer.Next();
   }
   return {node, consume_next};
 }
@@ -39,6 +61,9 @@ AstNodePtr Parse(Tokenizer& tokenizer) {
   auto root = std::make_shared<ListNode>();
   while (!tokenizer.IsEnd()) {
     auto token = tokenizer.GetToken();
+    if (std::holds_alternative<EOFToken>(token)) {
+      break;
+    }
     bool consume_next = true;
     if (token == Token{BracketToken::LEFT}) {
       auto [node, should_consume_next] = ReadList(tokenizer);
@@ -49,9 +74,18 @@ AstNodePtr Parse(Tokenizer& tokenizer) {
     } else {
       throw std::runtime_error("Unexpected token");
     }
-    if (consume_next) {
-      //tokenizer.Next();
-    }
   }
   return root;
+}
+
+std::string ASTtoString(const AstNodePtr &ast) {
+  if (auto symbolNode = std::dynamic_pointer_cast<SymbolNode>(ast)) {
+    return symbolNode->ToString(0);
+  } 
+  else if (auto numberNode = std::dynamic_pointer_cast<NumberNode>(ast)) {
+    return numberNode->ToString(0);
+  } 
+  else if (auto listNode = std::dynamic_pointer_cast<ListNode>(ast)) {
+    return listNode->ToString(0);
+  }
 }

@@ -55,5 +55,15 @@ TEST_F(AstToIrVisitorTest, Test3) {
   auto a = visitor->GenerateIR(ast);
 }
 
+TEST_F(AstToIrVisitorTest, Test4) {
+  // Assuming 'SymbolNode' takes a string in its constructor
+  std::istringstream input("(+ 3 5)");
+  Tokenizer tokenizer(&input);
+  auto ast = Parse(tokenizer);
+
+  // Run the method under test
+  auto a = visitor->GenerateIR(ast);
+}
+
 // Continue with tests for other methods...
 

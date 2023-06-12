@@ -1,4 +1,5 @@
 #include "codegen/IR.hpp"
+#include <iostream>
 
 
 const std::string& Add::get_dest() const {
@@ -18,6 +19,7 @@ std::vector<std::string> Add::GetUsedVars() const {
 }
 
 std::string  Add::Print() const {
+  std::cerr << "In Add::Print" << std::endl;
   return "  Add " + get_src1() + ", " + get_src2() + "\n" + "  return " + get_dest();
 }
 
@@ -158,21 +160,34 @@ std::vector<std::string> IRFunctionCall::GetUsedVars() const {
 }
 
 std::string IRFunctionCall::Print() const {
+  std::cerr << "Printing IRFCall" << std::endl;
   std::string result = "  call " + function_name_ + "(";
   for (size_t i = 0; i < args_.size(); ++i) {
     if (i != 0) {
       result += ", ";
     }
-    result += args_[i]->GetName();
+    std::cerr << "Printing VAL"<<args_[i] << std::endl;
+    if (args_[i]->GetType() == IRValueType::Constant) {
+      result += std::to_string(args_[i]->GetConstantValue());
+    } else if (args_[i]->GetType() == IRValueType::Variable) {
+      result += args_[i]->GetName();
+    } else if (args_[i]->GetType() == IRValueType::Temporary) {
+      // Handle temporary IRValues here
+      // ...
+    } else {
+      // Handle other types here, or throw an error if an unexpected type is encountered
+      // ...
+    }
   }
+
   result += ")";
   return result;
 }
 
+
 IRFunction::IRFunction(const std::string& name, const std::vector<std::string>& parameters)
     : name_(name), parameters_(parameters) {
 }
-
 
 const std::shared_ptr<IRBasicBlock>& Jump::GetTarget() const {
   return target_;
@@ -195,9 +210,11 @@ const std::vector<std::shared_ptr<IRBasicBlock>>& IRFunction::get_basic_blocks()
 }
 
 std::string IRFunction::Print() const {
+  std::cerr << "Printing IR function" << std::endl;
   std::string output;
   for  (const auto& basic_block : get_basic_blocks()) {
     output += "Basic block: ";
+    std::cerr << "Printing IR basic block. Number of instructions: " << basic_block->get_instructions().size() << std::endl;
     for (const auto& instruction : basic_block->get_instructions()) {
       output += instruction->Print();
     }
@@ -210,6 +227,7 @@ std::string IRProgram::GetNextTempVar() {
 }
 
 void IRProgram::add_function(const std::shared_ptr<IRFunction>& function) {
+  std::cerr << "Adding a function to the program" << std::endl;
   functions_.push_back(function);
 }
 
@@ -218,6 +236,8 @@ const std::vector<std::shared_ptr<IRFunction>>& IRProgram::get_functions() const
 }
 
 std::string IRProgram::Print() const {
+  std::cerr << "In IRProgram::Print" << std::endl;
+  std::cerr << "Number of functions: " << functions_.size() << std::endl;
   std::string output;
   for (const auto& function : functions_) {
     output += function->Print();

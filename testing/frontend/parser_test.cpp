@@ -127,6 +127,53 @@ TEST(ParserTest, ParseList) {
   EXPECT_EQ(number_node->value_, "42");
 }
 
+TEST(ParserTest, ParseList2) {
+  std::istringstream input("(3 5 +)");
+  Tokenizer tokenizer(&input);
+  auto ast = Parse(tokenizer);
+  auto list_node = std::dynamic_pointer_cast<ListNode>(ast);
+  ASSERT_NE(list_node, nullptr);
+  
+  auto inner_list_node = std::dynamic_pointer_cast<ListNode>(list_node->children_[0]);
+  ASSERT_EQ(inner_list_node->children_.size(), 3);
+
+  auto number_node1 = std::dynamic_pointer_cast<NumberNode>(inner_list_node->children_[0]);
+  ASSERT_NE(number_node1, nullptr);
+  EXPECT_EQ(number_node1->value_, "3");
+
+  auto number_node2 = std::dynamic_pointer_cast<NumberNode>(inner_list_node->children_[1]);
+  ASSERT_NE(number_node2, nullptr);
+  EXPECT_EQ(number_node2->value_, "5");
+
+  auto symbol_node = std::dynamic_pointer_cast<SymbolNode>(inner_list_node->children_[2]);
+  ASSERT_NE(symbol_node, nullptr);
+  EXPECT_EQ(symbol_node->value_, "+");
+}
+
+TEST(ParserTest, ParseList2Reversed) {
+  std::istringstream input("(+ 3 5)");
+  Tokenizer tokenizer(&input);
+  auto ast = Parse(tokenizer);
+  auto list_node = std::dynamic_pointer_cast<ListNode>(ast);
+  ASSERT_NE(list_node, nullptr);
+  
+  auto inner_list_node = std::dynamic_pointer_cast<ListNode>(list_node->children_[0]);
+  ASSERT_EQ(inner_list_node->children_.size(), 3);
+
+  auto symbol_node = std::dynamic_pointer_cast<SymbolNode>(inner_list_node->children_[0]);
+  ASSERT_NE(symbol_node, nullptr);
+  EXPECT_EQ(symbol_node->value_, "+");
+
+  auto number_node1 = std::dynamic_pointer_cast<NumberNode>(inner_list_node->children_[1]);
+  ASSERT_NE(number_node1, nullptr);
+  EXPECT_EQ(number_node1->value_, "3");
+
+  auto number_node2 = std::dynamic_pointer_cast<NumberNode>(inner_list_node->children_[2]);
+  ASSERT_NE(number_node2, nullptr);
+  EXPECT_EQ(number_node2->value_, "5");
+}
+
+
 TEST(ParserTest, ReadNestedList) {
   std::istringstream input("((x 42) (y 24))");
   Tokenizer tokenizer(&input);

@@ -72,7 +72,7 @@ int main(int argc, char **argv) {
 }
 
 TEST(IntegrationTest, TestInvalidInput) {
-    std::string scheme_program = "(define (fact n) (if (<= n 1) 1 (* n (fact (- n 1))";  // missing closing bracket
+    std::string scheme_program = ";(define (fact n) (if (<= n 1) 1 (* n (fact (- n 1))";  // missing closing bracket
     std::istringstream input_stream(scheme_program);
     Tokenizer tokenizer(&input_stream);
     
@@ -208,7 +208,7 @@ TEST(IntegrationTest, TestCorrectness2) {
 
 TEST(IntegraionTest, TestCorrectnessComplex1) {
   std::string test_program = "(define (square x) (* x x)) (define (sum-of-squares x y) (+ (square x) (square y))) (sum-of-squares 3 4)";
-  std::istringstream input_stream(scheme_program);
+  std::istringstream input_stream(test_program);
   Tokenizer tokenizer(&input_stream);
   auto root_node = Parse(tokenizer);
   auto expected = std::make_shared<ListNode>(std::vector<AstNodePtr>{
@@ -249,7 +249,7 @@ TEST(IntegraionTest, TestCorrectnessComplex1) {
           std::make_shared<NumberNode>("4")
       })
   });
-  ASSERT_TRUE(AstEqual(root_node, expected_root_node));
+  ASSERT_TRUE(AstEqual(root_node, expected));
 }
 
 TEST(IntegraionTest, TestCorrectnessComplex2) {
@@ -258,28 +258,6 @@ TEST(IntegraionTest, TestCorrectnessComplex2) {
   Tokenizer tokenizer(&input_stream);
   auto root_node = Parse(tokenizer);
   auto expected = std::make_shared<ListNode>(std::vector<AstNodePtr>{
-      std::make_shared<ListNode>(std::vector<AstNodePtr>{
-          std::make_shared<SymbolNode>("define"),
-          std::make_shared<ListNode>(std::vector<AstNodePtr>{
-              std::make_shared<SymbolNode>("factorial"),
-              std::make_shared<SymbolNode>("n")
-          }),
-          std::make_shared<ListNode>(std::vector<AstNodePtr>{
-              std::make_shared<SymbolNode>("if"),
-              std::make_shared<ListNode>(std::vector<AstNodePtr>{
-                  std::make_shared<SymbolNode>("="),
-                  std::make_shared<SymbolNode>("n"),
-                  std::make_shared<NumberNode>("0")
-              }),
-              std::make_shared<NumberNode>("1"),
-              std::make_shared<ListNode>(std::vector<AstNodePtr>{
-                  std::make_shared<SymbolNode
-                  void TestParserCorrectnessComplex2() {
-  std::string test_program = "(define (factorial n) (if (= n 0) 1 (* n (factorial (- n 1))))) (factorial 5)";
-  std::istringstream iss(test_program);
-  Tokenizer tokenizer(&iss);
-  AstNodePtr result = Parse(tokenizer);
-  AstNodePtr expected = std::make_shared<ListNode>(std::vector<AstNodePtr>{
       std::make_shared<ListNode>(std::vector<AstNodePtr>{
           std::make_shared<SymbolNode>("define"),
           std::make_shared<ListNode>(std::vector<AstNodePtr>{
@@ -314,5 +292,5 @@ TEST(IntegraionTest, TestCorrectnessComplex2) {
           std::make_shared<NumberNode>("5")
       })
   });
-  ASSERT_TRUE(AstEqual(root_node, expected_root_node));
+  ASSERT_TRUE(AstEqual(root_node, expected));
 }

@@ -1,24 +1,33 @@
 # keikaku
-A Scheme compiler.
+Keikaku: A Compiler for Scheme
 
-This is work in progress project of a Scheme compiler. Right now only frontend part is considered to be quite mature and ready. You can try it by calling kei.cpp and passing --emis-ast option.
-Although IR generation can be runned, it is not ready yet and probably buggy and error prone. You can still try to see the output. (With debug strings)
-Codegen is definetly not ready, though I sketched out some things, for example registers allocation.
-I am trying to resemble high-level architecture of LLVM, so that IR is generated from AST and machine code for (possibly) different architectures. 
-The aim of this project is to learn compilers and Scheme is choosen mainly for simplicity of syntax.
+Keikaku is a work-in-progress compiler for the Scheme programming language. The project's main objective is to learn and understand compiler design. Scheme is primarily chosen for its simplicity in syntax.
 
-## Installing and running
+Currently, the frontend of the compiler is considerably mature and ready for use. It can be experimented with using the 'kei.cpp' and the '--emit-ast' option to observe the abstract syntax tree (AST).
 
+The intermediate representation (IR) generation is available but in an early development stage, possibly containing bugs and errors. You can still try this feature and observe the output, complete with debug strings.
+
+The code generation module is not yet ready, although some preliminary work, like register allocation, has been sketched out.
+
+The high-level architecture of the project is inspired by the LLVM compiler infrastructure, transforming the AST into an IR, and ultimately machine code that can target various architectures.
+
+## Installing and usage
+Clone the repository:
 ```
 git clone https://github.com/houndlord/keikaku.git
 ```
+Build the project:
 ```
 $ mkdir build
 $ cd build
 $ cmake ..
 $ cmake --build .
+'''
+Run kei:
+'''
 $ ./kei --h
-
+'''
+'''
 # To build tests pass -DBUILD_TESTS = ON option to cmake:
 $ cmake -DBUILD_TESTS=ON ..
 $ cmake --build .

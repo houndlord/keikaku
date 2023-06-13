@@ -22,12 +22,12 @@ $ mkdir build
 $ cd build
 $ cmake ..
 $ cmake --build .
-'''
+```
 Run kei:
-'''
+```
 $ ./kei --h
-'''
-'''
+```
+```
 # To build tests pass -DBUILD_TESTS = ON option to cmake:
 $ cmake -DBUILD_TESTS=ON ..
 $ cmake --build .
